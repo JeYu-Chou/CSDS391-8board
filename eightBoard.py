@@ -91,22 +91,21 @@ def move(direction: str,verbose=True):
       return 1
 
 def scrambleState(n: int):
-  eightBoard.clear()
-  eightBoard.extend([0,1,2,3,4,5,6,7,8])
+  setState('0 1 2 3 4 5 6 7 8')
+  print()
   movements = {0:'up',1:'down',2:'left',3:'right'}
   if n <=0:
     print('No movement required')
     printState()
     return None
-  for i in range(n):
-    num = random.randint(0,3)
-    detect = move(movements[num],verbose=False)
-    print(f'Moving {movements[num]} with detect = {detect}')
-    while detect == -1:
+  num = 0
+  while num<n:
+    detect = move(movements[random.randint(0,3)],verbose = False)
+    while detect ==-1:
       detect = move(movements[random.randint(0,3)],verbose = False)
-      print(f'Moving {movements[random.randint(0,3)]} with detect = {detect}')
-  printState()
-  return None
-
+    else:
+      num +=1
+      #printState()
+      print()
 setState('1 0 2 3 4 5 6 7 8')
 scrambleState(5)
