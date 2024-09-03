@@ -20,7 +20,7 @@ def printState():
       else:
         print(' ',end = ' ')
         check +=1
-def setState(state_str: str) -> list:
+def setState(state_str: str):
   temp = state_str.split(' ')
   state = [int(i) for i in temp]
   check = set(state)
@@ -40,7 +40,8 @@ def setState(state_str: str) -> list:
   return 1
 
 
-def move(direction: str,verbose=True)->list:
+def move(direction: str,verbose=True):
+  #print(verbose)
   index = eightBoard.index(0)
   if direction =='up':
     if index -3<0:
@@ -89,7 +90,7 @@ def move(direction: str,verbose=True)->list:
       printState()
       return 1
 
-def scrambleState(n: int) -> list:
+def scrambleState(n: int):
   eightBoard.clear()
   eightBoard.extend([0,1,2,3,4,5,6,7,8])
   movements = {0:'up',1:'down',2:'left',3:'right'}
@@ -97,13 +98,15 @@ def scrambleState(n: int) -> list:
     print('No movement required')
     printState()
     return None
-  for i in n:
+  for i in range(n):
     num = random.randint(0,3)
-    detect = move(movements[move])
+    detect = move(movements[num],verbose=False)
+    print(f'Moving {movements[num]} with detect = {detect}')
     while detect == -1:
-      detect = move(movements[random.randint(0,3)])
+      detect = move(movements[random.randint(0,3)],verbose = False)
+      print(f'Moving {movements[random.randint(0,3)]} with detect = {detect}')
   printState()
   return None
 
 setState('1 0 2 3 4 5 6 7 8')
-scrambleState(0)
+scrambleState(5)
