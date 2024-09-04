@@ -1,0 +1,86 @@
+#Test case 1
+printState
+#Expected: a 3x3 matrix of the goal state
+setstate 1 0 2 3 4 5 6 7 8
+#Expected:
+#1   2
+#3 4 5
+#6 7 8
+move up
+#Expected: invalid move
+move down
+#Expected:
+#1 4 2
+#3   5
+#6 7 8
+move left 
+#Expected:
+#1 4 2
+#  3 5
+#6 7 8
+move down
+#Expected
+#1 4 2
+#6 3 5
+#  7 8
+move down
+#Expected: invalid move
+move right
+#Expected
+#1 4 2
+#6 3 5
+#7   8
+move right
+#Expected
+#1 4 2
+#6 3 5
+#7 8  
+move right
+#Expected: invalid move
+move up
+#Expected:
+#1 4 2
+#6 3  
+#7 8 5
+move left
+#Expected:
+#1 4 2
+#6   3  
+#7 8 5
+move up
+#Expected:
+#1   2
+#6 4 3  
+#7 8 5
+scramblestate 5 
+#Expected:
+#1 4 2
+#  3 5
+#6 7 8
+//Sequence of move is right, down, left, right, left
+#Testing for some fringe case 
+scramblestate -1
+#Expected: No movement required
+scramblestate pi
+#Expected: Cannot scramble non-integer times, no scrambling done
+scramblestate 4.5
+#Expected: Cannot scramble non-integer times, no scrambling done
+#Let's test some invalid state
+setstate 0 0 0 0 0 0 0 0
+#Expected: Invalid puzzle state
+#Expected: Due to invalid state, defaulting back to the goal state
+#Expected: The goal state
+setstate 1 2 3 4 5 6 7 8 9
+#Expected: Invalid puzzle state
+#Expected: Due to invalid state, defaulting back to the goal state
+#Expected: The goal state
+setstate 1 2 3 4 5 6 7 7
+#Expected: Invalid puzzle state
+#Expected: Due to invalid state, defaulting back to the goal state
+#Expected: The goal state
+setstate 1
+#Expected: Invalid puzzle state
+#Expected: Due to invalid state, defaulting back to the goal state
+#Expected: The goal state
+Invalid command 
+#Expected: Error: invalid command: 85

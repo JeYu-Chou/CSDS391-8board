@@ -1,0 +1,212 @@
+#Test case 1
+
+  1 2
+3 4 5
+6 7 8
+#Expected: a 3x3 matrix of the goal state
+
+1   2
+3 4 5
+6 7 8
+#Expected:
+
+#1   2
+
+#3 4 5
+
+#6 7 8
+
+Error: Invalid move
+#Expected: invalid move
+
+1 4 2
+3   5
+6 7 8
+#Expected:
+
+#1 4 2
+
+#3   5
+
+#6 7 8
+
+1 4 2
+  3 5
+6 7 8
+#Expected:
+
+#1 4 2
+
+#  3 5
+
+#6 7 8
+
+1 4 2
+6 3 5
+  7 8
+#Expected
+
+#1 4 2
+
+#6 3 5
+
+#  7 8
+
+Error: Invalid move
+#Expected: invalid move
+
+1 4 2
+6 3 5
+7   8
+#Expected
+
+#1 4 2
+
+#6 3 5
+
+#7   8
+
+1 4 2
+6 3 5
+7 8  
+#Expected
+
+#1 4 2
+
+#6 3 5
+
+#7 8  
+
+Error: Invalid move
+#Expected: invalid move
+
+1 4 2
+6 3  
+7 8 5
+#Expected:
+
+#1 4 2
+
+#6 3  
+
+#7 8 5
+
+1 4 2
+6   3
+7 8 5
+#Expected:
+
+#1 4 2
+
+#6   3  
+
+#7 8 5
+
+1   2
+6 4 3
+7 8 5
+#Expected:
+
+#1   2
+
+#6 4 3  
+
+#7 8 5
+
+  1 2
+3 4 5
+6 7 8
+
+1 4 2
+  3 5
+6 7 8
+#Expected:
+
+#1 4 2
+
+#  3 5
+
+#6 7 8
+
+//Sequence of move is right, down, left, right, left
+
+#Testing for some fringe case 
+
+  1 2
+3 4 5
+6 7 8
+
+No movement required
+  1 2
+3 4 5
+6 7 8
+#Expected: No movement required
+
+  1 2
+3 4 5
+6 7 8
+
+Cannot scramble non-integer times, no scrambling done
+  1 2
+3 4 5
+6 7 8
+#Expected: Cannot scramble non-integer times, no scrambling done
+
+  1 2
+3 4 5
+6 7 8
+
+Cannot scramble non-integer times, no scrambling done
+  1 2
+3 4 5
+6 7 8
+#Expected: Cannot scramble non-integer times, no scrambling done
+
+#Let's test some invalid state
+
+Error: invalid puzzle state
+Due to invalid state, defaulting back to the goal state
+  1 2
+3 4 5
+6 7 8
+#Expected: Invalid puzzle state
+
+#Expected: Due to invalid state, defaulting back to the goal state
+
+#Expected: The goal state
+
+Error: invalid puzzle state
+Due to invalid state, defaulting back to the goal state
+  1 2
+3 4 5
+6 7 8
+#Expected: Invalid puzzle state
+
+#Expected: Due to invalid state, defaulting back to the goal state
+
+#Expected: The goal state
+
+Error: invalid puzzle state
+Due to invalid state, defaulting back to the goal state
+  1 2
+3 4 5
+6 7 8
+#Expected: Invalid puzzle state
+
+#Expected: Due to invalid state, defaulting back to the goal state
+
+#Expected: The goal state
+
+Error: invalid puzzle state
+Due to invalid state, defaulting back to the goal state
+  1 2
+3 4 5
+6 7 8
+#Expected: Invalid puzzle state
+
+#Expected: Due to invalid state, defaulting back to the goal state
+
+#Expected: The goal state
+
+Error: invalid command: 85
+#Expected: Error: invalid command: 85
