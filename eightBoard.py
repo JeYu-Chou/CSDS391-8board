@@ -240,14 +240,17 @@ def main(filename):
           print(f'Invalid/no maximum node provided, defaulting to 1,000')'''
         if 'maxnode' in words[-1].strip().lower():
           node_num = 1000
+          sub_words = words[-1].split('=')
+          sub_words[-1] = sub_words[-1].strip()
+          #print(sub_words)
           try:
-            sub_words = words[-1].split('=')
-            node_num = int(subwords[-1].strip())
+            node_num = int(sub_words[-1].strip())
+            #print('here')
             if node_num<=0:
               print(f'Maximum node number cannot be less than 1, defaulting to 1,000')
               node_num = 1000
             else:
-              node_num = 1000
+              #node_num = 1000
               print(f'Setting maximum node number as {node_num}')
           except:
             print(f'Invalid/no maximum node number, defaulting to 1,000')
@@ -330,6 +333,8 @@ def DFS(maxnode=1000,eightBoard = eightBoard):
       temp_move = random.randint(0,3)
     stack.append((eightBoard,path+[movements[temp_move]]))
     node_num+=1
+    if node_num%1000==0:
+      print(f'Evaluated {node_num} nodes')
 
 
 

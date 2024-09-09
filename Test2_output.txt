@@ -1,0 +1,128 @@
+printState
+
+  1 2
+3 4 5
+6 7 8
+#Expected: a 3x3 matrix of the goal state
+
+#Testing BFS
+
+setState 0 1 2 3 4 5 6 7 8
+
+  1 2
+3 4 5
+6 7 8
+solve BFS
+
+Nodes created during search: 1
+Solution length 0
+#Expected: Invalid/no maximum node number, defaulting to 1,000
+
+#Expected: 0 moves
+
+setState 1 0 2 3 4 5 6 7 8
+
+1   2
+3 4 5
+6 7 8
+solve BFS maxnodes=10000
+
+Setting maximum node number as 10000
+Nodes created during search: 4
+Solution length 1
+Move left
+#Expected: 1 move (move left)
+
+setState 1 4 2 0 3 5 6 7 8
+
+1 4 2
+  3 5
+6 7 8
+solve BFS maxnodes=-56
+
+Maximum node number cannot be less than 1, defaulting to 1,000
+Nodes created during search: 52
+Solution length 3
+Move right
+Move up
+Move left
+#Expected: Maximum node number cannot be less than 1, defaulting to 1,000
+
+#Expected: 3 moves (right, up, left)
+
+setState 0 4 2 1 3 5 6 7 8
+
+  4 2
+1 3 5
+6 7 8
+solve BFS maxnodes=var
+
+Invalid/no maximum node number, defaulting to 1,000
+Nodes created during search: 153
+Solution length 4
+Move down
+Move right
+Move up
+Move left
+#Expected: 4 moves (down, right, up, left)
+
+setState 1 2 3 4 5 6 7 8 0
+
+1 2 3
+4 5 6
+7 8  
+solve BFS maxnodes=150000
+
+Setting maximum node number as 150000
+Error: max node number 150000 reached
+#Expected: Error: max node number 150000 reached
+
+#Testing DFS
+
+#This is not a conclusive test as DFS can be stuck for quite a bit
+
+#Many states it cannot solve 
+
+setState 1 0 2 3 4 5 6 7 8
+
+1   2
+3 4 5
+6 7 8
+solve DFS maxnodes=100000
+
+Setting maximum node number as 100000
+Nodes created during search: 2
+Solution length 1
+Move left
+setState 1 2 3 0 4 5 6 7 8
+
+1 2 3
+  4 5
+6 7 8
+solve DFS maxnodes=10000
+
+Setting maximum node number as 10000
+Evaluated 1000 nodes
+Evaluated 2000 nodes
+Evaluated 3000 nodes
+Evaluated 4000 nodes
+Evaluated 5000 nodes
+Evaluated 6000 nodes
+Evaluated 7000 nodes
+Evaluated 8000 nodes
+Evaluated 9000 nodes
+Evaluated 10000 nodes
+Error: max node number 10000 reached
+setState 0 1 2 3 4 5 6 7 8
+
+  1 2
+3 4 5
+6 7 8
+solve DFS maxnodes=poopoo
+
+Invalid/no maximum node number, defaulting to 1,000
+Nodes created during search: 1
+Solution length 0
+#Expected: Invalid/no maximum node number, defaulting to 1,000
+
+#Expected: 0 moves
