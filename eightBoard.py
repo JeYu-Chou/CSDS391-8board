@@ -227,7 +227,35 @@ def main(filename):
       else:
         print(f"Error: invalid command: {i}")
     i+=1
-    
+
+def check_solution(state):
+  #check = True
+  goal = [0,1,2,3,4,5,6,7,8]
+  for i in range(len(state)):
+    if goal[i] != state[i]:
+      return False
+  return True 
+#implementing BFS as a for loop as it's easier 
+def BFS(maxnode=1000):
+  queue = [[state,[]]]
+  visited = [[state,[]]]
+  node_num = 1
+  #length = 0
+  #sequence = []
+
+  if check_solution(eightBoard):
+    return node_num
+  while queue and node_num < maxnode:
+    current_state = queue.pop(0).copy()
+    eightBoard = current_state[0].copy()
+    movements = {0:'up',1:'down',2:'left',3:'right'}
+    for i in range(4):
+      check = move(movements[i],verbose=False)
+      if check == 1:
+        current_state[1].append(movements)
+        #this is a valid move
+        #First append the movements to the 
+
 #Main function to run 
 if __name__=='__main__':
   #A quick check to see if the instruction txt is included
