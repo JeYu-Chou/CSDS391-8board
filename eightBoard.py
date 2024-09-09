@@ -5,7 +5,7 @@
 import random
 import sys
 #Setting random seed to ensure consistency
-seed = 321
+seed = 19201080
 random.seed(seed)
 #Setting up the eight board as its default (goal state)
 #To ensure you can start printing the board without setting it up
@@ -72,7 +72,7 @@ def setState(state_str: str,verbose=True):
 #If a move is not valid, the state is not changed
 #Verbosity is to ensure that for scramblestate
 #Every move the program is not outputting the result
-def move(direction: str,verbose=True):
+def move(direction: str,verbose=True,eightBoard = eightBoard):
   #print(f'verbose is {verbose}')
   index = eightBoard.index(0)#Getting the index for manipulation
   if direction =='up':
@@ -158,6 +158,7 @@ def scrambleState(n: str):
   setState('0 1 2 3 4 5 6 7 8')#First set up the goal state
   print()
   movements = {0:'up',1:'down',2:'left',3:'right'} #Defining a dictionary of moves to allow generating random integers
+  print(f'n is {int(n)}')
   try:#To ensure that the input is an integer
     n = int(n)
     if n <=0:
@@ -169,10 +170,12 @@ def scrambleState(n: str):
       return None
     num = 0
     while num<n: #Repeat 
-      detect = move(movements[random.randint(0,3)],verbose = False) #Check if the move is valid
+      temp = random.randint(0,3)
+      detect = move(movements[temp],verbose = False) #Check if the move is valid
       while detect ==-1:
         #If not, repeat the move until it is
-        detect = move(movements[random.randint(0,3)],verbose = False)
+        temp = random.randint(0,3)
+        detect = move(movements[temp],verbose = False)
       else:
         num +=1 #Increasing the move counter by 1
         #printState()
@@ -204,6 +207,7 @@ def main(filename):
       print(line)
     #Let's know deal with the actual moves
     else:
+      print(line)
       words = line.split(' ')
       #Make the first word lower case so it can accept both upper and lower cases
       words[0] = words[0].lower()
@@ -224,6 +228,35 @@ def main(filename):
         scrambleState(words[1])
       elif words[0]=='printstate':
         printState()
+      elif words[0].strip().lower() == 'solve':
+        node_num = 1000
+        '''try:
+          node_num = int(words[-1])
+          if node_num <=0:
+            print(f'Maximum node number cannot be less than 1, defaulting to 1,000')
+            node_num = 1000
+        except:
+          node_num = 1000
+          print(f'Invalid/no maximum node provided, defaulting to 1,000')'''
+        if 'maxnode' in words[-1].strip().lower():
+          node_num = 1000
+          try:
+            sub_words = words[-1].split('=')
+            node_num = int(subwords[-1].strip())
+            if node_num<=0:
+              print(f'Maximum node number cannot be less than 1, defaulting to 1,000')
+              node_num = 1000
+            else:
+              node_num = 1000
+              print(f'Setting maximum node number as {node_num}')
+          except:
+            print(f'Invalid/no maximum node number, defaulting to 1,000')
+        if words[1].strip().lower() == 'bfs':
+          BFS(node_num)
+        elif words[1].strip().lower()=='dfs':
+          DFS(node_num)
+        else:
+          print(f'Error: invalid command: {i}')
       else:
         print(f"Error: invalid command: {i}")
     i+=1
@@ -249,7 +282,7 @@ def BFS(maxnode=1000,eightBoard=eightBoard):
 
   while queue:
     if node_num>=maxnode:
-      print(f'Error: max node number {node_num} reached')
+      print(f'Error: max node number {maxnode} reached')
       return
     current_state,path = queue.pop(0)
     if check_solution(current_state):
@@ -259,29 +292,49 @@ def BFS(maxnode=1000,eightBoard=eightBoard):
       return 
 
     eightBoard=current_state.copy()
-    movements = {1:'up',2:'down',3:'right',4:'left'}
+    #print(f'current_state is {current_state}')
+    movements = {0:'left',1:'right',2:'up',3:'down'}
     for i in movements:
-      if move(movements[i],verbose=True) == 1:
-        path.append(movements[i])
-        queue.append((eightBoard,path))
+      #print()
+      #print(f'eightBoard is {eightBoard}')
+      #print(f'move is {movements[i]}')
+      if move(movements[i],verbose=False,eightBoard=eightBoard) == 1:
+        #print('in')
+        #path.append(movements[i])
+        queue.append((eightBoard,path+[movements[i]]))
         node_num+=1
         eightBoard = current_state.copy()
+        #print(f'queue is {queue}')
+        #print(f'eightBoard is {eightBoard}')
 
-def DFS(maxnode=1000):
+def DFS(maxnode=1000,eightBoard = eightBoard):
   stack = [(eightBoard,[])]
   node_num = 1
   while stack:
     if node_num>=maxnode:
       print(f'Error: max node number {node_num} reached')
+      return
     current_state,path = stack.pop(-1)
     if check_solution(current_state):
       
       print(f'Nodes created during search: {node_num}')
       print(f'Solution length {len(path)}')
       print_moves(path)
+      return 
+    eightBoard=current_state.copy()
+    movements = {0:'up',1:'down',2:'right',3:'left'}
+    #Temporary eightBoard to see the moves
+    #temp = eightBoard.copy()
+    temp_move = random.randint(0,3)
+    while move(movements[temp_move],eightBoard=eightBoard,verbose=False)==-1:
+      temp_move = random.randint(0,3)
+    stack.append((eightBoard,path+[movements[temp_move]]))
+    node_num+=1
+
+
 
     
-'''if __name__=='__main__':
+if __name__=='__main__':
   #A quick check to see if the instruction txt is included
   if len(sys.argv)!=2:
     if len(sys.argv)<2:
@@ -291,7 +344,8 @@ def DFS(maxnode=1000):
       print(f'Too many arguments detected. Please only input one file.')
       sys.exit(1)
     #sys.exit(1)
-  main(sys.argv[1])'''
+  main(sys.argv[1])
     
-setState('1 0 2 3 4 5 6 7 8')
-BFS(maxnode=10)
+#scrambleState(9)
+#setState('0 4 2 1 3 5 6 7 8')
+#BFS(maxnode=1000)
