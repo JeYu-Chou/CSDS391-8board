@@ -236,28 +236,52 @@ def check_solution(state):
       return False
   return True 
 #implementing BFS as a for loop as it's easier 
-def BFS(maxnode=1000):
-  queue = [[state,[]]]
-  visited = [[state,[]]]
+def print_moves(moves):
+  for i in moves:
+    print(f'Move {i}')
+
+def BFS(maxnode=1000,eightBoard=eightBoard):
+  queue = [(eightBoard,[])]
+  visited = [(eightBoard,[])]
   node_num = 1
   #length = 0
   #sequence = []
 
-  if check_solution(eightBoard):
-    return node_num
-  while queue and node_num < maxnode:
-    current_state = queue.pop(0).copy()
-    eightBoard = current_state[0].copy()
-    movements = {0:'up',1:'down',2:'left',3:'right'}
-    for i in range(4):
-      check = move(movements[i],verbose=False)
-      if check == 1:
-        current_state[1].append(movements)
-        #this is a valid move
-        #First append the movements to the 
+  while queue:
+    if node_num>=maxnode:
+      print(f'Error: max node number {node_num} reached')
+      return
+    current_state,path = queue.pop(0)
+    if check_solution(current_state):
+      print(f'Nodes created during search: {node_num}')
+      print(f'Solution length {len(path)}')
+      print_moves(path)
+      return 
 
-#Main function to run 
-if __name__=='__main__':
+    eightBoard=current_state.copy()
+    movements = {1:'up',2:'down',3:'right',4:'left'}
+    for i in movements:
+      if move(movements[i],verbose=True) == 1:
+        path.append(movements[i])
+        queue.append((eightBoard,path))
+        node_num+=1
+        eightBoard = current_state.copy()
+
+def DFS(maxnode=1000):
+  stack = [(eightBoard,[])]
+  node_num = 1
+  while stack:
+    if node_num>=maxnode:
+      print(f'Error: max node number {node_num} reached')
+    current_state,path = stack.pop(-1)
+    if check_solution(current_state):
+      
+      print(f'Nodes created during search: {node_num}')
+      print(f'Solution length {len(path)}')
+      print_moves(path)
+
+    
+'''if __name__=='__main__':
   #A quick check to see if the instruction txt is included
   if len(sys.argv)!=2:
     if len(sys.argv)<2:
@@ -267,7 +291,7 @@ if __name__=='__main__':
       print(f'Too many arguments detected. Please only input one file.')
       sys.exit(1)
     #sys.exit(1)
-  main(sys.argv[1])
+  main(sys.argv[1])'''
     
-#setState('1 0 2 3 4 5 6 7 8')
-#move('up')
+setState('1 0 2 3 4 5 6 7 8')
+BFS(maxnode=10)
