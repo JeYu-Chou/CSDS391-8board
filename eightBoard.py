@@ -242,6 +242,13 @@ def main(filename):
         scrambleState(words[1])
       elif words[0]=='printstate':
         printState()
+      elif words[0].strip().lower()=='heuristic':
+        if words[1].strip().lower()=='h1':
+          print(f'Number of misplaced tiles is {h1()}')
+        elif words[1].strip().lower()=='h2':
+          print(f'The Manhattan distnace is {h2()}')
+        else:
+          print(f'Undefined heuristic at line{i}, please only input h1 (the number of misplaced tiles) or h2 (the manhattan distance)')
       elif words[0].strip().lower() == 'solve':
         node_num = 1000
         '''try:
@@ -272,13 +279,17 @@ def main(filename):
           BFS(node_num)
         elif words[1].strip().lower()=='dfs':
           DFS(node_num)
-        elif words[1].strip().lower()=='A*':
+        elif words[1].strip().lower()=='a*':
           heuristic = words[2].strip().lower()
-          if heuristic!='h1' or heuristic!='h2':
-            print(f'Invalid Heursitc in line {i}')
-          if 'maxnode' not in words[3]:
-            #Testing for Ex 5 in HW3
-            AStar(heursitic,maxnode=node_num,verbosity=True)
+          if heuristic!='h1' and heuristic!='h2':
+            #print(heuristic=='h2')
+            print(f'Invalid Heursitc in line {i}, with heuristic {heuristic}')
+          if len(words)>=4:
+            if 'maxnode' not in words[3]:
+              #Testing for Ex 5 in HW3
+              AStar(heuristic,maxnode=node_num,verbosity=True)
+            else:
+              AStar(heuristic,maxnode=node_num)
           else:
             AStar(heuristic,maxnode=node_num)
         else:
@@ -382,7 +393,13 @@ def h2(eightBoard = eightBoard,goal=goal):
 
 def AStar(heuristic,maxnode = 1000, eightBoard=eightBoard,goal=goal,verbosity=False):
   movements = {0:'left',1:'right',2:'up',3:'down'}
-  h = heuristic(eightBoard,goal)
+  h=0
+  if heuristic == 'h1':
+    h = h1(eightBoard,goal)
+  elif heuristic == 'h2':
+    h = h2(eightBoard,goal)
+  else:
+    return
   queue = []
   visited = set()
   node_num = 1
@@ -416,7 +433,13 @@ def AStar(heuristic,maxnode = 1000, eightBoard=eightBoard,goal=goal,verbosity=Fa
         #print('in')
         #path.append(movements[i])
         if tuple(eightBoard) not in visited:
-          h = heuristic(eightBoard)
+          h=0
+          if heuristic == 'h1':
+            h = h1(eightBoard,goal)
+          elif heuristic == 'h2':
+            h = h2(eightBoard,goal)
+          else:
+            return
           heappush(queue,(h+len(path)+1,eightBoard,path+[movements[i]]))
           #queue.append((eightBoard,path+[movements[i]]))
           node_num+=1
@@ -430,7 +453,7 @@ def AStar(heuristic,maxnode = 1000, eightBoard=eightBoard,goal=goal,verbosity=Fa
         #print(f'eightBoard is {eightBoard}')
 
     
-'''if __name__=='__main__':
+if __name__=='__main__':
   #A quick check to see if the instruction txt is included
   if len(sys.argv)!=2:
     if len(sys.argv)<2:
@@ -440,11 +463,11 @@ def AStar(heuristic,maxnode = 1000, eightBoard=eightBoard,goal=goal,verbosity=Fa
       print(f'Too many arguments detected. Please only input one file.')
       sys.exit(1)
     #sys.exit(1)
-  main(sys.argv[1])'''
+  main(sys.argv[1])
 
-#scrambleState(9)
+#scrambleState(5)
 #scrambleState('10')
-setState('7 2 4 5 0 6 8 3 1')
+'''setState('7 2 4 5 0 6 8 3 1')
 print(eightBoard)
 #BFS(maxnode=1000000)
 import time
@@ -455,4 +478,4 @@ for i in range(5):
   t = time.time()-start
   print(f'Total elapsed time: {t}')
   total.append(t)
-print(f'Average is {np.mean(t)} and std is {np.std(t)}')
+print(f'Average is {np.mean(t)} and std is {np.std(t)}')'''
