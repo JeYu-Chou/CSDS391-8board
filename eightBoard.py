@@ -271,6 +271,15 @@ def main(filename):
           BFS(node_num)
         elif words[1].strip().lower()=='dfs':
           DFS(node_num)
+        elif words[1].strip().lower()=='A*':
+          heuristic = words[2].strip().lower()
+          if heuristic!='h1' or heuristic!='h2':
+            print(f'Invalid Heursitc in line {i}')
+          if 'maxnode' not in words[3]:
+            #Testing for Ex 5 in HW3
+            AStar(heursitic,maxnode=node_num,verbosity=True)
+          else:
+            AStar(heuristic,maxnode=node_num)
         else:
           print(f'Error: invalid command: {i}')
       else:
@@ -370,7 +379,7 @@ def h2(eightBoard = eightBoard,goal=goal):
       distance+=abs(goal_col-e_col)+abs(goal_row-e_row)
   return distance
 
-def AStar(heuristic,maxnode = 1000, eightBoard=eightBoard,goal=goal,):
+def AStar(heuristic,maxnode = 1000, eightBoard=eightBoard,goal=goal,verbosity=False):
   movements = {0:'left',1:'right',2:'up',3:'down'}
   h = heuristic(eightBoard,goal)
   queue = []
@@ -411,6 +420,10 @@ def AStar(heuristic,maxnode = 1000, eightBoard=eightBoard,goal=goal,):
           #queue.append((eightBoard,path+[movements[i]]))
           node_num+=1
           visited.add(tuple(eightBoard))
+        else:
+          if verbosity:
+            print(f'{eightBoard} already in visited, since visited is: ')
+            print(visited)
         eightBoard = current_state.copy()
         #print(f'queue is {queue}')
         #print(f'eightBoard is {eightBoard}')
@@ -429,7 +442,7 @@ def AStar(heuristic,maxnode = 1000, eightBoard=eightBoard,goal=goal,):
   main(sys.argv[1])'''
     
 #scrambleState(9)
-scrambleState('100',verbosity=True)
+scrambleState('10')
 print(eightBoard)
-BFS(maxnode=10000)
-AStar(h1,maxnode=10000)
+#BFS(maxnode=1000000)
+AStar(h2,maxnode=1000000,verbosity=True)
