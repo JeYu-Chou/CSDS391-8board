@@ -5,6 +5,7 @@
 import random
 import sys
 from heapq import heappush,heappop
+import numpy as np
 #Setting random seed to ensure consistency
 seed = 19201080
 random.seed(seed)
@@ -407,7 +408,7 @@ def AStar(heuristic,maxnode = 1000, eightBoard=eightBoard,goal=goal,verbosity=Fa
     eightBoard=current_state.copy()
     #print(f'current_state is {current_state}')
     for i in movements:
-      length+=1
+      #length+=1
       #print()
       #print(f'eightBoard is {eightBoard}')
       #print(f'move is {movements[i]}')
@@ -416,7 +417,7 @@ def AStar(heuristic,maxnode = 1000, eightBoard=eightBoard,goal=goal,verbosity=Fa
         #path.append(movements[i])
         if tuple(eightBoard) not in visited:
           h = heuristic(eightBoard)
-          heappush(queue,(h+length,eightBoard,path+[movements[i]]))
+          heappush(queue,(h+len(path)+1,eightBoard,path+[movements[i]]))
           #queue.append((eightBoard,path+[movements[i]]))
           node_num+=1
           visited.add(tuple(eightBoard))
@@ -440,9 +441,18 @@ def AStar(heuristic,maxnode = 1000, eightBoard=eightBoard,goal=goal,verbosity=Fa
       sys.exit(1)
     #sys.exit(1)
   main(sys.argv[1])'''
-    
+
 #scrambleState(9)
-scrambleState('10')
+#scrambleState('10')
+setState('7 2 4 5 0 6 8 3 1')
 print(eightBoard)
 #BFS(maxnode=1000000)
-AStar(h2,maxnode=1000000,verbosity=True)
+import time
+total =[]
+for i in range(5):
+  start = time.time()
+  AStar(h1,maxnode=1000000,verbosity=False)
+  t = time.time()-start
+  print(f'Total elapsed time: {t}')
+  total.append(t)
+print(f'Average is {np.mean(t)} and std is {np.std(t)}')
