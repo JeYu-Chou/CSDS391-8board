@@ -1,0 +1,259 @@
+#Test3 (Only testing for h1 and h2 and A*)
+
+#Checking for h1
+
+setState 0 1 2 3 4 5 6 7 8
+
+  1 2
+3 4 5
+6 7 8
+heurisitc h1
+
+Error: invalid command: 4
+#Expected: 0
+
+setState 1 0 2 3 4 5 6 7 8
+
+1   2
+3 4 5
+6 7 8
+heuristic h1
+
+Number of misplaced tiles is 1
+#Expected: 1
+
+setState 7 2 4 5 0 6 8 3 1
+
+7 2 4
+5   6
+8 3 1
+heuristic h1
+
+Number of misplaced tiles is 8
+#Expected: 8
+
+#Checking for h2
+
+setState 0 1 2 3 4 5 6 7 8
+
+  1 2
+3 4 5
+6 7 8
+heuristic h2
+
+The Manhattan distnace is 0
+#Expected: 0
+
+setState 1 0 2 3 4 5 6 7 8
+
+1   2
+3 4 5
+6 7 8
+heuristic h2
+
+The Manhattan distnace is 1
+#Expected: 1
+
+setState 7 2 4 5 0 6 8 3 1
+
+7 2 4
+5   6
+8 3 1
+heuristic h2
+
+The Manhattan distnace is 18
+#Expected: 18
+
+heuristic h3
+
+Undefined heuristic at line22, please only input h1 (the number of misplaced tiles) or h2 (the manhattan distance)
+#Expected: Error
+
+#Testing A* and repeated states
+
+setState 0 1 2 3 4 5 6 7 8
+
+  1 2
+3 4 5
+6 7 8
+solve A* h2
+
+Nodes created during search: 1
+Solution length 0
+#Expected: 0 moves
+
+setState 1 0 2 3 4 5 6 7 8
+
+1   2
+3 4 5
+6 7 8
+solve A* h1
+
+Nodes created during search: 4
+Solution length 1
+Move left
+#Expected: 1 move
+
+setState 1 0 2 3 4 5 6 7 8
+
+1   2
+3 4 5
+6 7 8
+solve A* h2
+
+Nodes created during search: 4
+Solution length 1
+Move left
+#Expected: 1 move
+
+setState 7 2 4 5 0 6 8 3 1
+
+7 2 4
+5   6
+8 3 1
+solve A* h1
+
+Error: max node number 1000 reached
+#Expected: Error, max node exceeded
+
+setState 7 2 4 5 0 6 8 3 1
+
+7 2 4
+5   6
+8 3 1
+solve A* h2
+
+Error: max node number 1000 reached
+#Expected: Error, max node exceeded
+
+solve A* h1 maxnodes=1000000
+
+Setting maximum node number as 1000000
+Nodes created during search: 46411
+Solution length 26
+Move left
+Move up
+Move right
+Move down
+Move right
+Move down
+Move left
+Move left
+Move up
+Move right
+Move right
+Move down
+Move left
+Move left
+Move up
+Move right
+Move right
+Move up
+Move left
+Move left
+Move down
+Move right
+Move right
+Move up
+Move left
+Move left
+#Expected: 26 moves
+
+solve A* h2 maxnodes=1000000
+
+Setting maximum node number as 1000000
+Nodes created during search: 2716
+Solution length 26
+Move left
+Move up
+Move right
+Move down
+Move right
+Move down
+Move left
+Move left
+Move up
+Move right
+Move right
+Move down
+Move left
+Move left
+Move up
+Move right
+Move right
+Move up
+Move left
+Move left
+Move down
+Move right
+Move right
+Move up
+Move left
+Move left
+#Expected: 26 moves
+
+setState 1 4 2 3 5 0 6 7 8
+
+1 4 2
+3 5  
+6 7 8
+#Demonstrating repeated states are checked
+
+#To demonstrate, I print out the visited list and have the computer tell me when a state is repeated.
+
+solve A* h1 test maxnodes=10000
+
+Setting maximum node number as 10000
+Expanding state (1, 4, 2, 3, 0, 5, 6, 7, 8)
+Expanding state (1, 4, 0, 3, 5, 2, 6, 7, 8)
+Expanding state (1, 4, 2, 3, 5, 8, 6, 7, 0)
+Expanding state (1, 4, 2, 0, 3, 5, 6, 7, 8)
+(1, 4, 2, 3, 5, 0, 6, 7, 8) already in visited, visited is the set: 
+{(1, 4, 2, 3, 5, 8, 6, 7, 0), (1, 4, 2, 3, 5, 0, 6, 7, 8), (1, 4, 0, 3, 5, 2, 6, 7, 8), (1, 4, 2, 0, 3, 5, 6, 7, 8), (1, 4, 2, 3, 0, 5, 6, 7, 8)}
+Expanding state (1, 0, 2, 3, 4, 5, 6, 7, 8)
+Expanding state (1, 4, 2, 3, 7, 5, 6, 0, 8)
+Expanding state (0, 1, 2, 3, 4, 5, 6, 7, 8)
+Expanding state (1, 2, 0, 3, 4, 5, 6, 7, 8)
+(1, 4, 2, 3, 0, 5, 6, 7, 8) already in visited, visited is the set: 
+{(1, 4, 2, 3, 7, 5, 6, 0, 8), (1, 4, 2, 3, 5, 8, 6, 7, 0), (0, 1, 2, 3, 4, 5, 6, 7, 8), (1, 2, 0, 3, 4, 5, 6, 7, 8), (1, 4, 2, 3, 5, 0, 6, 7, 8), (1, 4, 0, 3, 5, 2, 6, 7, 8), (1, 0, 2, 3, 4, 5, 6, 7, 8), (1, 4, 2, 0, 3, 5, 6, 7, 8), (1, 4, 2, 3, 0, 5, 6, 7, 8)}
+Nodes created during search: 9
+Solution length 3
+Move left
+Move up
+Move left
+#Testing for edge case 
+
+setState 1 2 0 3 4 5 6 7 8
+
+1 2  
+3 4 5
+6 7 8
+solve A* h3
+
+Invalid/missing Heursitc in line 50
+Defaulting to the default, h2
+Nodes created during search: 5
+Solution length 2
+Move left
+Move left
+setState 3 2 5 4 1 8 6 7 0
+
+3 2 5
+4 1 8
+6 7  
+solve A* maxnode=100000
+
+Setting maximum node number as 100000
+Invalid/missing Heursitc in line 52
+Defaulting to the default, h2
+Nodes created during search: 13
+Solution length 6
+Move up
+Move up
+Move left
+Move down
+Move left
+Move up
+#Display invalid/missing heursitic
+
+#Still solve it using h2
