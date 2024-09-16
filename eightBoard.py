@@ -4,6 +4,7 @@
 #and sys to help parse the command (to get the txt file)
 import random
 import sys
+from heapq import heappush,heappop
 #Setting random seed to ensure consistency
 seed = 19201080
 random.seed(seed)
@@ -156,10 +157,11 @@ def move(direction: str,verbose=True,eightBoard = eightBoard):
       return 1
 
 #Function to scramble the goal state 
-def scrambleState(n: str):
+def scrambleState(n: str,verbosity=False):
   setState('0 1 2 3 4 5 6 7 8')#First set up the goal state
   print()
   movements = {0:'up',1:'down',2:'left',3:'right'} #Defining a dictionary of moves to allow generating random integers
+  list_move = []
   print(f'n is {int(n)}')
   try:#To ensure that the input is an integer
     n = int(n)
@@ -180,9 +182,18 @@ def scrambleState(n: str):
         detect = move(movements[temp],verbose = False)
       else:
         num +=1 #Increasing the move counter by 1
+        list_move.append(movements[temp])
         #printState()
         #print()
     printState()
+    if verbosity:
+      n=0
+      for i in list_move:
+        if n%5==0:
+          print()
+          print()
+        print(i,end=' ')
+        n+=1
   except:
     #When the input is not an integer, which is invalid
     print("Cannot scramble non-integer times, no scrambling done")
@@ -359,22 +370,50 @@ def h2(eightBoard = eightBoard,goal=goal):
       distance+=abs(goal_col-e_col)+abs(goal_row-e_row)
   return distance
 
-def AStar(eightBoard=eightBoard,goal=goal):
+def AStar(heuristic,maxnode = 1000, eightBoard=eightBoard,goal=goal,):
   movements = {0:'left',1:'right',2:'up',3:'down'}
-  for i in movements:
-    #print()
-    #print(f'eightBoard is {eightBoard}')
-    #print(f'move is {movements[i]}')
-    if move(movements[i],verbose=False,eightBoard=eightBoard) == 1:
-      #print('in')
-      #path.append(movements[i])
-      queue.append((eightBoard,path+[movements[i]]))
-      node_num+=1
-      eightBoard = current_state.copy()
-      #print(f'queue is {queue}')
+  h = heuristic(eightBoard,goal)
+  queue = []
+  visited = set()
+  node_num = 1
+  #first number being the priority
+  #second element is the eightboard
+  #third element is the path list
+  heappush(queue,(h,eightBoard,[]))
+  visited.add(tuple(eightBoard))
+  length = 0
+  #sequence = []
+
+  while queue:
+    if node_num>=maxnode:
+      print(f'Error: max node number {maxnode} reached')
+      return
+    f,current_state,path = heappop(queue)
+    if check_solution(current_state):
+      print(f'Nodes created during search: {node_num}')
+      print(f'Solution length {len(path)}')
+      print_moves(path)
+      return 
+
+    eightBoard=current_state.copy()
+    #print(f'current_state is {current_state}')
+    for i in movements:
+      length+=1
+      #print()
       #print(f'eightBoard is {eightBoard}')
-
-
+      #print(f'move is {movements[i]}')
+      if move(movements[i],verbose=False,eightBoard=eightBoard) == 1:
+        #print('in')
+        #path.append(movements[i])
+        if tuple(eightBoard) not in visited:
+          h = heuristic(eightBoard)
+          heappush(queue,(h+length,eightBoard,path+[movements[i]]))
+          #queue.append((eightBoard,path+[movements[i]]))
+          node_num+=1
+          visited.add(tuple(eightBoard))
+        eightBoard = current_state.copy()
+        #print(f'queue is {queue}')
+        #print(f'eightBoard is {eightBoard}')
 
     
 '''if __name__=='__main__':
@@ -390,6 +429,7 @@ def AStar(eightBoard=eightBoard,goal=goal):
   main(sys.argv[1])'''
     
 #scrambleState(9)
-setState('7 2 4 5 0 6 8 3 1')
-print(h1())
-print(h2())
+scrambleState('100',verbosity=True)
+print(eightBoard)
+BFS(maxnode=10000)
+AStar(h1,maxnode=10000)
