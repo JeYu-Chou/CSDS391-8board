@@ -283,7 +283,9 @@ def main(filename):
           heuristic = words[2].strip().lower()
           if heuristic!='h1' and heuristic!='h2':
             #print(heuristic=='h2')
-            print(f'Invalid Heursitc in line {i}, with heuristic {heuristic}')
+            print(f'Invalid/missing Heursitc in line {i}')
+            print(f'Defaulting to the default, h2')
+            heuristic = 'h2'
           if len(words)>=4:
             if 'maxnode' not in words[3]:
               #Testing for Ex 5 in HW3
@@ -416,6 +418,8 @@ def AStar(heuristic,maxnode = 1000, eightBoard=eightBoard,goal=goal,verbosity=Fa
       print(f'Error: max node number {maxnode} reached')
       return
     f,current_state,path = heappop(queue)
+    #print(f'Expanding state {current_state}')
+    #visited.add(tuple(current_state))
     if check_solution(current_state):
       print(f'Nodes created during search: {node_num}')
       print(f'Solution length {len(path)}')
@@ -448,8 +452,8 @@ def AStar(heuristic,maxnode = 1000, eightBoard=eightBoard,goal=goal,verbosity=Fa
           visited.add(tuple(eightBoard))
         else:
           if verbosity:
-            print(f'{tuple(eightBoard)} already in visited')
-            #print(visited)
+            print(f'{tuple(eightBoard)} already in visited, visited is the set: ')
+            print(visited)
         eightBoard = current_state.copy()
         #print(f'queue is {queue}')
         #print(f'eightBoard is {eightBoard}')
