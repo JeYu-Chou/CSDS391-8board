@@ -10,6 +10,8 @@ random.seed(seed)
 #Setting up the eight board as its default (goal state)
 #To ensure you can start printing the board without setting it up
 eightBoard = [0,1,2,3,4,5,6,7,8]
+goal = [0,1,2,3,4,5,6,7,8]
+#node_set = set()
 
 #Function to print out the state
 def printState():
@@ -336,10 +338,46 @@ def DFS(maxnode=1000,eightBoard = eightBoard):
     if node_num%1000==0:
       print(f'Evaluated {node_num} nodes')
 
+def h1(eightBoard = eightBoard,goal=goal):
+  #h1 is the number of tiles off of place
+  num = 0
+  for i in range(len(eightBoard)):
+    if eightBoard[i]!=0:
+      if eightBoard[i]!=goal[i]:
+        num+=1
+  return num
+
+def h2(eightBoard = eightBoard,goal=goal):
+  #h2 is the manhattan distance
+  distance = 0
+  for i in goal:
+    if i!= 0:
+      goal_col = i//3
+      goal_row = i%3
+      e_col = eightBoard.index(i)//3
+      e_row = eightBoard.index(i)%3
+      distance+=abs(goal_col-e_col)+abs(goal_row-e_row)
+  return distance
+
+def AStar(eightBoard=eightBoard,goal=goal):
+  movements = {0:'left',1:'right',2:'up',3:'down'}
+  for i in movements:
+    #print()
+    #print(f'eightBoard is {eightBoard}')
+    #print(f'move is {movements[i]}')
+    if move(movements[i],verbose=False,eightBoard=eightBoard) == 1:
+      #print('in')
+      #path.append(movements[i])
+      queue.append((eightBoard,path+[movements[i]]))
+      node_num+=1
+      eightBoard = current_state.copy()
+      #print(f'queue is {queue}')
+      #print(f'eightBoard is {eightBoard}')
+
 
 
     
-if __name__=='__main__':
+'''if __name__=='__main__':
   #A quick check to see if the instruction txt is included
   if len(sys.argv)!=2:
     if len(sys.argv)<2:
@@ -349,8 +387,9 @@ if __name__=='__main__':
       print(f'Too many arguments detected. Please only input one file.')
       sys.exit(1)
     #sys.exit(1)
-  main(sys.argv[1])
+  main(sys.argv[1])'''
     
 #scrambleState(9)
-#setState('0 4 2 1 3 5 6 7 8')
-#BFS(maxnode=1000)
+setState('7 2 4 5 0 6 8 3 1')
+print(h1())
+print(h2())
