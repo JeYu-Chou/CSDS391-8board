@@ -434,6 +434,8 @@ def AStar(heuristic,maxnode = 1000, eightBoard=eightBoard,goal=goal,verbosity=Fa
         #path.append(movements[i])
         if tuple(eightBoard) not in visited:
           h=0
+          if verbosity:
+            print(f'Expanding state {tuple(eightBoard)}')
           if heuristic == 'h1':
             h = h1(eightBoard,goal)
           elif heuristic == 'h2':
@@ -446,8 +448,8 @@ def AStar(heuristic,maxnode = 1000, eightBoard=eightBoard,goal=goal,verbosity=Fa
           visited.add(tuple(eightBoard))
         else:
           if verbosity:
-            print(f'{eightBoard} already in visited, since visited is: ')
-            print(visited)
+            print(f'{tuple(eightBoard)} already in visited')
+            #print(visited)
         eightBoard = current_state.copy()
         #print(f'queue is {queue}')
         #print(f'eightBoard is {eightBoard}')
