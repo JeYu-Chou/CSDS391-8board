@@ -6,8 +6,11 @@ import random
 import sys
 from heapq import heappush,heappop
 import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import csv
 #Setting random seed to ensure consistency
-seed = 19201080
+seed = 23
 random.seed(seed)
 #Setting up the eight board as its default (goal state)
 #To ensure you can start printing the board without setting it up
@@ -16,7 +19,7 @@ goal = [0,1,2,3,4,5,6,7,8]
 #node_set = set()
 
 #Function to print out the state
-def printState():
+def printState(eightBoard=eightBoard):
   check = 1 #Checking how many times the number has been printed
   #If it it at more than 3
   #Print to a new line
@@ -41,8 +44,9 @@ def printState():
 #Takes in a string of numbers (separated by a space)
 #Verbose is for internal use
 #Used so that if the code sets the default state, it does not print the state too many times
-def setState(state_str: str,verbose=True):
+def setState(state_str: str,verbose=True,eightBoard=eightBoard):
   temp = state_str.split(' ')
+  #print(state_str)
   state = [int(i) for i in temp] #Split up the numbers and add them to a list called temp
   #Then convert them to integers
   check = set(state) #A quick check of the set for duplicate elements
@@ -51,6 +55,8 @@ def setState(state_str: str,verbose=True):
     #Since there should not be any duplicates, the length of the set and list should be the same
     #If not, there is an error
     print('Error: invalid puzzle state')
+    #print(state)
+    #print
     return -1
   if 0 not in check:
     #No empty spaces, thus not a valid state
@@ -158,7 +164,7 @@ def move(direction: str,verbose=True,eightBoard = eightBoard):
       return 1
 
 #Function to scramble the goal state 
-def scrambleState(n: str,verbosity=False):
+def scrambleState(n: str,verbosity=False,eightBoard=eightBoard):
   setState('0 1 2 3 4 5 6 7 8')#First set up the goal state
   print()
   movements = {0:'up',1:'down',2:'left',3:'right'} #Defining a dictionary of moves to allow generating random integers
@@ -187,6 +193,7 @@ def scrambleState(n: str,verbosity=False):
         #printState()
         #print()
     printState()
+    return eightBoard
     if verbosity:
       n=0
       for i in list_move:
@@ -314,8 +321,9 @@ def print_moves(moves):
 
 def BFS(maxnode=1000,eightBoard=eightBoard):
   queue = [(eightBoard,[])]
-  visited = [(eightBoard,[])]
+  visited = set()
   node_num = 1
+  repeated_num = 0
   #length = 0
   #sequence = []
 
@@ -327,8 +335,9 @@ def BFS(maxnode=1000,eightBoard=eightBoard):
     if check_solution(current_state):
       print(f'Nodes created during search: {node_num}')
       print(f'Solution length {len(path)}')
+      print(f'Found {repeated_num} duplicated')
       print_moves(path)
-      return 
+      return node_num,len(path)
 
     eightBoard=current_state.copy()
     #print(f'current_state is {current_state}')
@@ -340,16 +349,24 @@ def BFS(maxnode=1000,eightBoard=eightBoard):
       if move(movements[i],verbose=False,eightBoard=eightBoard) == 1:
         #print('in')
         #path.append(movements[i])
-        queue.append((eightBoard,path+[movements[i]]))
-        node_num+=1
-        eightBoard = current_state.copy()
+        if tuple(eightBoard) not in visited:
+          visited.add(tuple(eightBoard))
+          queue.append((eightBoard,path+[movements[i]]))
+          node_num+=1
+        else:
+          repeated_num+=1
+      eightBoard = current_state.copy()
         #print(f'queue is {queue}')
         #print(f'eightBoard is {eightBoard}')
 
 def DFS(maxnode=1000,eightBoard = eightBoard):
+  #print('In DFS (yay)')
   stack = [(eightBoard,[])]
+  visited = set()
   node_num = 1
+  repeated_num = 0
   while stack:
+    #print('in here')
     if node_num>=maxnode:
       print(f'Error: max node number {node_num} reached')
       return
@@ -357,20 +374,28 @@ def DFS(maxnode=1000,eightBoard = eightBoard):
     if check_solution(current_state):
       
       print(f'Nodes created during search: {node_num}')
+      print(f'Checked {repeated_num} states that are duplicates')
       print(f'Solution length {len(path)}')
-      print_moves(path)
-      return 
-    eightBoard=current_state.copy()
+      #print_moves(path)
+      return node_num,len(path)
+    #eightBoard=current_state.copy()
     movements = {0:'up',1:'down',2:'right',3:'left'}
     #Temporary eightBoard to see the moves
     #temp = eightBoard.copy()
-    temp_move = random.randint(0,3)
-    while move(movements[temp_move],eightBoard=eightBoard,verbose=False)==-1:
-      temp_move = random.randint(0,3)
-    stack.append((eightBoard,path+[movements[temp_move]]))
-    node_num+=1
+    for i in range(4):
+      temp_board = current_state.copy()
+      if move(movements[i], eightBoard=temp_board, verbose=False) != -1:
+
+        if tuple(temp_board) not in visited:
+          visited.add(tuple(temp_board))
+          stack.append((temp_board,path+[movements[i]]))
+          node_num+=1
+        else:
+          repeated_num+=1
     if node_num%1000==0:
       print(f'Evaluated {node_num} nodes')
+  else:
+    print('Stack is now empty (sad)')
 
 def h1(eightBoard = eightBoard,goal=goal):
   #h1 is the number of tiles off of place
@@ -424,7 +449,7 @@ def AStar(heuristic,maxnode = 1000, eightBoard=eightBoard,goal=goal,verbosity=Fa
       print(f'Nodes created during search: {node_num}')
       print(f'Solution length {len(path)}')
       print_moves(path)
-      return 
+      return node_num,len(path)
 
     eightBoard=current_state.copy()
     #print(f'current_state is {current_state}')
@@ -458,8 +483,89 @@ def AStar(heuristic,maxnode = 1000, eightBoard=eightBoard,goal=goal,verbosity=Fa
         #print(f'queue is {queue}')
         #print(f'eightBoard is {eightBoard}')
 
+def f(x,d=2,n=2):
+  sol = 1
+  for i in range(1,d+1):
+    sol+=x**i
+  return sol-n
+def df(x,d=2,n=2):
+  sol = 1
+  for i in range(1,d+1):
+    sol+=i*x**(i-1)
+  return sol
+def Newton(f,df,guess,args=(),tol=1e-8,iter = 1, max_iter = 500,verbosity=False,x_k=[]):
+  xn = guess
+  xn1 = xn - (f(xn,*args)/df(xn,*args))
+  if np.abs(xn1-xn)<tol or iter>=max_iter:
+    if verbosity:
+      print(f'At the {iter} iteration, the estimate is {xn1}')
+      if iter>=max_iter:
+        return {'val':xn1,'iterations':iter,'x_k':x_k,'maxed':True}
+      return {'val':xn1,'iterations':iter,'x_k':x_k,'maxed':False}
+    return xn1
+  else:
+    if verbosity:
+      print(f'At the {iter} iteration, the estimate is {xn1}, and f(xn) is {f(xn)}')
+      x_k.append(xn1)
+    return Newton(f,df,xn1,args=args,tol=tol,iter=iter+1,max_iter=max_iter,verbosity=verbosity,x_k=x_k)
+
+def EBF(d,n,tol=1e-2):
+  guess = 1
+  return Newton(f,df,guess,args=(d,n),tol=tol,max_iter=5000,verbosity=False)
+
+'''def generate_boards(seed=seed):
+  random.seed(seed)
+  boards=[]
+  seed = seed
+  for t in range(1,11):
+    i = str(t)
+    #testing to if it is indeed the right depth
+    temp = scrambleState(i,eightBoard=eightBoard)
+    num_nodes,path=AStar('h2',maxnode=1e7)
+    while path!=t:
+      seed+=1
+      random.seed(seed)
+      temp = scrambleState(i,eightBoard=eightBoard)
+      num_nodes,path=AStar('h2',maxnode=1e7)
+    boards.append(temp)
+  return boards'''
+def truncate(number,digits):
+  factor = 10**digits
+  return int(number * factor) / factor
+def compare(seed=seed):
+  with open('dict.csv','w') as csv_file:
+    writer = csv.writer(csv_file)
+    writer.writerow(['Algorithm','Optimal Depth','# of Nodes','Depth','Effective Branching Factor'])
+    #boards = generate_boards()
+    n = 1
+    for i in range(1,21):
+      #Testing 
+      temp = scrambleState(str(i))
+      node_num,path = AStar('h2',maxnode=1e5)
+      while path!=i:
+        seed+=1
+        random.seed(seed)
+        temp = scrambleState(str(i))
+        node_num,path=AStar('h2',maxnode=1e5)
+
+      node_num,path=DFS(maxnode=1e10,eightBoard=temp)
+      writer.writerow(['DFS',n,node_num,path,truncate(EBF(path,node_num),3)])
+      #scrambleState(i)
+      node_num,path=BFS(maxnode=1e10,eightBoard=temp)
+      writer.writerow(['BFS',n,node_num,path,truncate(EBF(path,node_num),3)])
+      #scrambleState(i)
+      node_num,path=AStar('h1',maxnode=1e7,eightBoard=temp)
+      writer.writerow(['A*(h1)',n,node_num,path,truncate(EBF(path,node_num),3)])
+      #scrambleState(i)
+      node_num,path=AStar('h2',maxnode=1e7,eightBoard=temp)
+      writer.writerow(['A*(h2)',n,node_num,path,truncate(EBF(path,node_num),3)])
+      n+=1
+  #return master_dict
+
+
+
     
-if __name__=='__main__':
+'''if __name__=='__main__':
   #A quick check to see if the instruction txt is included
   if len(sys.argv)!=2:
     if len(sys.argv)<2:
@@ -469,19 +575,47 @@ if __name__=='__main__':
       print(f'Too many arguments detected. Please only input one file.')
       sys.exit(1)
     #sys.exit(1)
-  main(sys.argv[1])
+  main(sys.argv[1])'''
 
-#scrambleState(5)
-#scrambleState('10')
-'''setState('7 2 4 5 0 6 8 3 1')
-print(eightBoard)
-#BFS(maxnode=1000000)
-import time
-total =[]
-for i in range(5):
-  start = time.time()
-  AStar(h1,maxnode=1000000,verbosity=False)
-  t = time.time()-start
-  print(f'Total elapsed time: {t}')
-  total.append(t)
-print(f'Average is {np.mean(t)} and std is {np.std(t)}')'''
+#This has been commendted out as it takes a very long while to run
+#compare
+
+#loading data to plot
+'''DFS_list = []
+BFS_list=[]
+h1_list = []
+h2_list = []
+with open('dict.csv', 'r') as csvfile:
+  spamreader = csv.reader(csvfile, delimiter=',')
+  for row in spamreader:
+    if row[0]=='DFS':
+      DFS_list.append(float(row[-1]))
+    elif row[0]=='BFS':
+      BFS_list.append(float(row[-1]))
+    elif row[0]=='A*(h2)':
+      h2_list.append(float(row[-1]))
+    elif row[0]=='A*(h1)':
+      h1_list.append(float(row[-1]))
+#Plotting the result
+#h1_list.pop(0)
+fig = plt.figure()
+ax = fig.subplots()
+ax.plot(np.arange(1,21),DFS_list,label='DFS')
+ax.plot(np.arange(1,21),BFS_list,label='BFS')
+ax.plot(np.arange(1,21),h1_list,label='A*(h1)')
+ax.plot(np.arange(1,21),h2_list,label='A*(h2)')
+ax.set_title('Convergence of Branching Factor for Different Algorithms')
+ax.set_xlabel('Depth')
+ax.set_ylabel('Branching Factor')
+ax.legend()
+plt.savefig('Convergence.png',dpi=1200)'''
+
+#Showing it works
+print(f'For an effective branching factor of 2, I calculated {EBF(2,7,tol=1e-8)}')
+print(f'For an effective branching factor of 3, I calcualted {EBF(3,40,tol=1e-8)}')
+'''print('\n'*4)
+#For DFS 
+eightBoard=scrambleState(5)
+DFS(maxnode=1e6,eightBoard=eightBoard)
+#print(EBF(3,1))'''
+
